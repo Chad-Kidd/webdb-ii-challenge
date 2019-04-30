@@ -19,6 +19,7 @@ const knexConfig = {
 const db = knex(knexConfig);
 // endpoints here
 
+
 //POST WORKING
 server.post('/api/zoos', (req, res) => {
   db('zoos').insert(req.body, 'id')
@@ -30,7 +31,8 @@ server.post('/api/zoos', (req, res) => {
   })
 })
 
-// GET BY ID
+
+// GET BY ID WORKING
 server.get('/api/zoos/:id', (req, res) => {
   db('zoos').where({id: req.params.id})
   .first()
@@ -45,6 +47,58 @@ server.get('/api/zoos/:id', (req, res) => {
     res.status(500).json(error)
   })
 })
+
+
+// GET WORKING
+server.get('/api/zoos', (req, res) => {
+  db('zoos') //returns a promise use .then and .catch
+  .then(zoos => {
+    res.status(200).json(zoos)
+  }).catch(error => {
+    console.log(error)
+  })
+  // get the zoos from the database
+  //res.send('Write code to retrieve all zoos');
+});
+
+
+//DELETE WORKING
+server.delete('/api/zoos/:id', (req, res) => {
+  // remove roles (inactivate the role)
+  db('zoos')
+  .where({id: req.params.id})
+  .delete()
+  .then(count => {
+    if(count > 0) {
+      res.status(200).json({message: `${count} zoo(s) deleted`})
+    } else {
+      res.status(404).json({message: 'zoo does not exist'})
+    }
+  })
+  .catch(error => {
+    res.send(500).json(error);
+  })
+});
+
+
+// PUT - UPDATE WORKING
+server.put('/api/zoos/:id', (req, res) => {
+  // update roles FILTER RECORDS THEN UPDATE
+  db('zoos')
+  .where({id: req.params.id})
+  .update(req.body)
+  .then(count => {
+    if(count > 0) {
+      res.status(200).json({message: `${count} record updated`})
+    } else {
+      res.status(404).json({message: 'zoo does not exist'})
+    }
+  })
+  .catch(error => {
+    res.send(500).json(error);
+  })
+  //res.send('Write code to modify a role');
+});
 
 
 //SERVER PORT
